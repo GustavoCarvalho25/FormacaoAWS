@@ -1,0 +1,62 @@
+@JobManager.API_HostAddress = http://localhost:5073/api
+
+### Create a new job (EF Core)
+POST {{JobManager.API_HostAddress}}/jobs
+Content-Type: application/json
+
+{
+  "title": "Backend Developer",
+  "description": "Develop APIs using ASP.NET Core.",
+  "minSalary": 5000,
+  "maxSalary": 9000,
+  "company": "Acme Corp"
+}
+
+### Get all jobs (EF Core)
+GET {{JobManager.API_HostAddress}}/jobs
+
+### Apply to a job (EF Core)
+POST {{JobManager.API_HostAddress}}/jobs/1/applications
+Content-Type: application/json
+
+{
+  "candidateName": "John Doe",
+  "candidateEmail": "john.doe@example.com"
+}
+
+### Create a new job (DynamoDB)
+POST {{JobManager.API_HostAddress}}/jobs-v2
+Content-Type: application/json
+
+{
+  "id": 2,
+  "title": "Frontend Developer",
+  "description": "Build UI with Blazor or React.",
+  "minSalary": 4000,
+  "maxSalary": 8000,
+  "company": "NextGen"
+}
+
+### Get all jobs (DynamoDB)
+GET {{JobManager.API_HostAddress}}/jobs-v2
+
+### Apply to a job (DynamoDB)
+POST {{JobManager.API_HostAddress}}/jobs-v2/2/apply
+Content-Type: application/json
+
+{
+  "candidateName": "Jane Smith",
+  "candidateEmail": "jane.smith@example.com"
+}
+
+### Upload a CV to a job application
+# Replace `<path_to_file>` with the actual path of the file on disk (if using tools like REST Client in VSCode that support it)
+PUT {{JobManager.API_HostAddress}}/job-applications/1/upload-cv
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="file"; filename="cv.pdf"
+Content-Type: application/pdf
+
+< ./cv.pdf
+--boundary--
