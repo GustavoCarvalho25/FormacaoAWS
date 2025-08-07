@@ -1,5 +1,7 @@
 using Amazon;
 using Amazon.Extensions.NETCore.Setup;
+using Amazon.S3;
+using Amazon.S3.Model;
 using JobManager.API.Entities;
 using JobManager.API.Persistence;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -107,7 +109,23 @@ internal class Program
             {
                 return Results.BadRequest();
             }
+            
+            var client = new AmazonS3Client(RegionEndpoint.SAEast1);
+
+            var bucketName = "formacaoawsgustavot9";
+            
             var key = $"job-applications/{id}-{file.FileName}";
+
+            using var stream = file.OpenReadStream();
+
+            var putObject = new PutObjectRequest
+            {
+                BucketName = bucketName,
+                Key = key,
+                InputStream = stream
+            };
+            
+            var response = await client.PutObjectAsync(putObject);
 
             var application = await db.JobApplications.SingleOrDefaultAsync(ja => ja.Id == id);
 

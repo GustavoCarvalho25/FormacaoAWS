@@ -1,7 +1,7 @@
 @JobManager.API_HostAddress = http://localhost:5073/api
 
 ### Create a new job (EF Core)
-POST {{JobManager.API_HostAddress}}/jobs
+POST http://localhost:5073/api/jobs
 Content-Type: application/json
 
 {
@@ -13,10 +13,10 @@ Content-Type: application/json
 }
 
 ### Get all jobs (EF Core)
-GET {{JobManager.API_HostAddress}}/jobs
+GET http://localhost:5073/api/jobs
 
 ### Apply to a job (EF Core)
-POST {{JobManager.API_HostAddress}}/jobs/1/applications
+POST http://localhost:5073/api/jobs/1/applications
 Content-Type: application/json
 
 {
@@ -25,7 +25,7 @@ Content-Type: application/json
 }
 
 ### Create a new job (DynamoDB)
-POST {{JobManager.API_HostAddress}}/jobs-v2
+POST http://localhost:5073/api/jobs-v2
 Content-Type: application/json
 
 {
@@ -38,10 +38,10 @@ Content-Type: application/json
 }
 
 ### Get all jobs (DynamoDB)
-GET {{JobManager.API_HostAddress}}/jobs-v2
+GET http://localhost:5073/api/jobs-v2
 
 ### Apply to a job (DynamoDB)
-POST {{JobManager.API_HostAddress}}/jobs-v2/2/apply
+POST http://localhost:5073/api/jobs-v2/2/apply
 Content-Type: application/json
 
 {
@@ -51,7 +51,7 @@ Content-Type: application/json
 
 ### Upload a CV to a job application
 # Replace `<path_to_file>` with the actual path of the file on disk (if using tools like REST Client in VSCode that support it)
-PUT {{JobManager.API_HostAddress}}/job-applications/1/upload-cv
+PUT http://localhost:5073/api/ 
 Content-Type: multipart/form-data; boundary=boundary
 
 --boundary
