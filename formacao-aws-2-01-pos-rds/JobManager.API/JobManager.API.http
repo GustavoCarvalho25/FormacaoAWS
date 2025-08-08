@@ -16,7 +16,7 @@ Content-Type: application/json
 GET http://localhost:5073/api/jobs
 
 ### Apply to a job (EF Core)
-POST http://localhost:5073/api/jobs/1/applications
+POST http://localhost:5073/api/jobs/1/job-applications
 Content-Type: application/json
 
 {
@@ -51,7 +51,7 @@ Content-Type: application/json
 
 ### Upload a CV to a job application
 # Replace `<path_to_file>` with the actual path of the file on disk (if using tools like REST Client in VSCode that support it)
-PUT http://localhost:5073/api/ 
+PUT http://localhost:5073/api/job-applications/1/upload-cv
 Content-Type: multipart/form-data; boundary=boundary
 
 --boundary

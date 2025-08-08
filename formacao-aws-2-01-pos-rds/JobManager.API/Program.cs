@@ -139,8 +139,31 @@ internal class Program
             await db.SaveChangesAsync();
 
             return Results.NoContent();
-        });
+        }).DisableAntiforgery();
 
+        app.MapGet("/api/job-applications/{id}/cv", async (int id, string email, [FromServices] AppDbContext db) =>
+        {
+            var baseS3Url =
+                "https://formacaoawsgustavot9.s3.sa-east-1.amazonaws.com/job-applications/";
+            
+            var application = await db.JobApplications.SingleOrDefaultAsync(ja => ja.CandidateEmail == email);
+
+            var fullKey = $"{baseS3Url}/{id}-{application.CVUrl}";
+            
+            var bucketName = "formacaoawsgustavot9";
+
+            var getRequest = new GetObjectRequest
+            {
+                BucketName = bucketName,
+                Key = fullKey
+            };
+            
+            var client = new AmazonS3Client(RegionEndpoint.SAEast1);
+            
+            var response = await client.GetObjectAsync(getRequest);
+            
+            return Results.File(response.ResponseStream, response.Headers.ContentType, response.Headers.ContentDisposition);
+        });
         app.Run();
     }
 }
