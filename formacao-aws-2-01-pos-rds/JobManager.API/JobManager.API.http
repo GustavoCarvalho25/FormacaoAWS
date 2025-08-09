@@ -5,8 +5,8 @@ POST http://localhost:5073/api/jobs
 Content-Type: application/json
 
 {
-  "title": "Backend Developer",
-  "description": "Develop APIs using ASP.NET Core.",
+  "title": "Dotnet Developer",
+  "description": "Aplicacaon de APIs com ASP.NET Core.",
   "minSalary": 5000,
   "maxSalary": 9000,
   "company": "Acme Corp"
@@ -16,7 +16,7 @@ Content-Type: application/json
 GET http://localhost:5073/api/jobs
 
 ### Apply to a job (EF Core)
-POST http://localhost:5073/api/jobs/1/job-applications
+POST http://localhost:5073/api/jobs/2/job-applications
 Content-Type: application/json
 
 {

@@ -2,6 +2,8 @@ using Amazon;
 using Amazon.Extensions.NETCore.Setup;
 using Amazon.S3;
 using Amazon.S3.Model;
+using Amazon.SQS;
+using Amazon.SQS.Model;
 using JobManager.API.Entities;
 using JobManager.API.Persistence;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -77,7 +79,8 @@ internal class Program
             return Results.Ok(jobs);
         });
 
-        app.MapPost("/api/jobs/{id}/job-applications", async (int id, JobApplication application, [FromServices] AppDbContext db) =>
+        app.MapPost("/api/jobs/{id}/job-applications", async (int id, JobApplication application, [FromServices] AppDbContext db,
+           [FromServices] IConfiguration configuration) =>
         {
             var exists = await db.Jobs.AnyAsync(j => j.Id == id);
 
@@ -89,8 +92,23 @@ internal class Program
             application.JobId = id;
 
             await db.JobApplications.AddAsync(application);
-            await db.SaveChangesAsync();
+            
+            
+            var client = new AmazonSQSClient(RegionEndpoint.SAEast1);
+            
+            var queueUrl = configuration.GetValue<string>("AWS:SQSQueueUrl") ?? string.Empty;
+            
+            var request = new SendMessageRequest
+            {
+                QueueUrl = queueUrl,
+                MessageBody = $"New application for job {id} by {application.CandidateName} ({application.CandidateEmail})"
+            };
+            
+            var result = await client.SendMessageAsync(request);
 
+            
+            await db.SaveChangesAsync();
+            
             return Results.NoContent();
         });
 
@@ -143,19 +161,18 @@ internal class Program
 
         app.MapGet("/api/job-applications/{id}/cv", async (int id, string email, [FromServices] AppDbContext db) =>
         {
-            var baseS3Url =
-                "https://formacaoawsgustavot9.s3.sa-east-1.amazonaws.com/job-applications/";
+           //var baseS3Url = "https://formacaoawsgustavot9.s3.sa-east-1.amazonaws.com/job-applications/";
             
             var application = await db.JobApplications.SingleOrDefaultAsync(ja => ja.CandidateEmail == email);
 
-            var fullKey = $"{baseS3Url}/{id}-{application.CVUrl}";
+            //var fullKey = $"{baseS3Url}/{id}-{application.CVUrl}";
             
             var bucketName = "formacaoawsgustavot9";
 
             var getRequest = new GetObjectRequest
             {
                 BucketName = bucketName,
-                Key = fullKey
+                Key = application.CVUrl
             };
             
             var client = new AmazonS3Client(RegionEndpoint.SAEast1);
