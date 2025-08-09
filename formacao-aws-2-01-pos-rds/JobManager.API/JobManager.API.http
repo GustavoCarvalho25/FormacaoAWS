@@ -5,8 +5,8 @@ POST http://localhost:5073/api/jobs
 Content-Type: application/json
 
 {
-  "title": "Dotnet Developer",
-  "description": "Aplicacaon de APIs com ASP.NET Core.",
+  "title": "Dotnet Teste",
+  "description": "Teste de APIs com ASP.NET Core.",
   "minSalary": 5000,
   "maxSalary": 9000,
   "company": "Acme Corp"
@@ -16,12 +16,12 @@ Content-Type: application/json
 GET http://localhost:5073/api/jobs
 
 ### Apply to a job (EF Core)
-POST http://localhost:5073/api/jobs/2/job-applications
+POST http://localhost:5073/api/jobs/3/job-applications
 Content-Type: application/json
 
 {
-  "candidateName": "John Doe",
-  "candidateEmail": "john.doe@example.com"
+  "candidateName": "Teste download",
+  "candidateEmail": "teste.doe@example.com"
 }
 
 ### Create a new job (DynamoDB)

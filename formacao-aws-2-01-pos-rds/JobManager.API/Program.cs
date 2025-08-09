@@ -6,7 +6,7 @@ using Amazon.SQS;
 using Amazon.SQS.Model;
 using JobManager.API.Entities;
 using JobManager.API.Persistence;
-using Microsoft.AspNetCore.Http.HttpResults;
+using JobManager.API.Workers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -38,6 +38,8 @@ internal class Program
         var connectionString = builder.Configuration.GetConnectionString("AppDb");
 
         builder.Services.AddDbContext<AppDbContext>(o => o.UseSqlServer(connectionString));
+
+        builder.Services.AddHostedService<JobApplicationNotificationWorker>();
 
         // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
         builder.Services.AddOpenApi();
@@ -98,21 +100,24 @@ internal class Program
             
             var queueUrl = configuration.GetValue<string>("AWS:SQSQueueUrl") ?? string.Empty;
             
+            var queueResponse = await client.GetQueueUrlAsync("FormacaoAwsGustavoC");
+            
+            var queue = queueResponse.QueueUrl;
+            
             var request = new SendMessageRequest
             {
-                QueueUrl = queueUrl,
+                QueueUrl = queue,
                 MessageBody = $"New application for job {id} by {application.CandidateName} ({application.CandidateEmail})"
             };
             
             var result = await client.SendMessageAsync(request);
-
             
             await db.SaveChangesAsync();
             
             return Results.NoContent();
         });
 
-        app.MapPut("/api/job-applications/{id}/upload-cv", async (int id, IFormFile file, [FromServices] AppDbContext db) =>
+        app.MapPut("/api/job-applications/{id}/upload-cv", async (int id, IFormFile file, [FromServices] AppDbContext db, [FromServices] IConfiguration configuration) =>
         {
             if (file == null || file.Length == 0)
             {
@@ -130,7 +135,7 @@ internal class Program
             
             var client = new AmazonS3Client(RegionEndpoint.SAEast1);
 
-            var bucketName = "formacaoawsgustavot9";
+            var bucketName = configuration.GetValue<string>("AWS:S3BucketName");
             
             var key = $"job-applications/{id}-{file.FileName}";
 
@@ -159,15 +164,13 @@ internal class Program
             return Results.NoContent();
         }).DisableAntiforgery();
 
-        app.MapGet("/api/job-applications/{id}/cv", async (int id, string email, [FromServices] AppDbContext db) =>
+        app.MapGet("/api/job-applications/{id}/cv", async (int id, string email, [FromServices] AppDbContext db, [FromServices] IConfiguration configuration) =>
         {
-           //var baseS3Url = "https://formacaoawsgustavot9.s3.sa-east-1.amazonaws.com/job-applications/";
-            
             var application = await db.JobApplications.SingleOrDefaultAsync(ja => ja.CandidateEmail == email);
 
             //var fullKey = $"{baseS3Url}/{id}-{application.CVUrl}";
             
-            var bucketName = "formacaoawsgustavot9";
+            var bucketName = configuration.GetValue<string>("AWS:S3BucketName");
 
             var getRequest = new GetObjectRequest
             {
