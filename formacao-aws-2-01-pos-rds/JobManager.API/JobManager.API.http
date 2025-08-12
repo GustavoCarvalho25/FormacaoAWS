@@ -25,7 +25,7 @@ Content-Type: application/json
 }
 
 ### Create a new job (DynamoDB)
-POST http://localhost:5073/api/jobs-v2
+POST http://localhost:5073/api/v2/jobs
 Content-Type: application/json
 
 {
@@ -38,10 +38,10 @@ Content-Type: application/json
 }
 
 ### Get all jobs (DynamoDB)
-GET http://localhost:5073/api/jobs-v2
+GET http://localhost:5073/api/v2/jobs
 
 ### Apply to a job (DynamoDB)
-POST http://localhost:5073/api/jobs-v2/2/apply
+POST http://localhost:5073/api/v2/jobs/2/job-applications
 Content-Type: application/json
 
 {

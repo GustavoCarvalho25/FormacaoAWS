@@ -18,6 +18,8 @@
     <PackageReference Include="AWSSDK.S3" Version="3.7.412.4" />
     <PackageReference Include="AWSSDK.SQS" Version="3.7.400.84" />
     
+    <PackageReference Include="AWSSDK.DynamoDBv2" Version="3.7.405.10" />
+    
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.5" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.5">
       <PrivateAssets>all</PrivateAssets>
